@@ -4,6 +4,8 @@ function QuestionCard({
   totalQuestions,
   answer,
   onAnswerChange,
+  feedback,
+  answered,
 }) {
   const baseButtonClass =
     "w-full rounded-xl border px-4 py-3 text-left text-sm font-medium transition";
@@ -18,6 +20,24 @@ function QuestionCard({
           {question.prompt}
         </h2>
       </header>
+
+      {answered && feedback && (
+        <div
+          className={`mt-4 rounded-xl px-4 py-2 text-sm font-semibold ${
+            feedback.isCorrect
+              ? "border border-emerald-100 bg-emerald-50 text-emerald-800"
+              : "border border-rose-100 bg-rose-50 text-rose-800"
+          }`}
+        >
+          {feedback.isCorrect ? "Correct" : "Incorrect"}
+          {feedback.type === "D" && feedback.essayMatch && (
+            <span className="ml-2 font-normal">
+              — matched {feedback.essayMatch.matched}/
+              {feedback.essayMatch.totalKeywords} keywords
+            </span>
+          )}
+        </div>
+      )}
 
       <div className="mt-6 space-y-3">
         {question.type === "A" &&

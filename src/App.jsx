@@ -6,6 +6,7 @@ import QuizHistory from "./components/QuizHistory";
 import ResultsStage from "./components/ResultsStage";
 import {
   evaluateQuiz,
+  evaluateQuestion,
   getDefaultSampleJson,
   parseQuizInput,
 } from "./utils/quiz";
@@ -118,6 +119,13 @@ function App() {
 
   const currentQuestion = questions[currentIndex];
   const isLastQuestion = currentIndex === questions.length - 1;
+  const currentFeedback =
+    currentQuestion && answersById
+      ? evaluateQuestion(currentQuestion, answersById[currentQuestion.id])
+      : null;
+  const currentAnswered = currentQuestion
+    ? hasAnswer(currentQuestion, answersById[currentQuestion.id])
+    : false;
 
   function handleStartQuiz() {
     try {
@@ -218,7 +226,9 @@ function App() {
       setErrorText("");
       setStage("playing");
     } catch {
-      setErrorText("Could not retake this attempt because its stored JSON is no longer valid.");
+      setErrorText(
+        "Could not retake this attempt because its stored JSON is no longer valid.",
+      );
       setStage("input");
     }
   }
@@ -246,9 +256,7 @@ function App() {
 
   function handleViewAttemptResults(attempt) {
     if (!attempt?.evaluation) {
-      setErrorText(
-        "Detailed results are unavailable for this older attempt.",
-      );
+      setErrorText("Detailed results are unavailable for this older attempt.");
       setStage("input");
       return;
     }
@@ -343,6 +351,8 @@ function App() {
               totalQuestions={questions.length}
               answer={answersById[currentQuestion.id]}
               onAnswerChange={updateCurrentAnswer}
+              feedback={currentFeedback}
+              answered={currentAnswered}
             />
 
             <div className="flex flex-wrap justify-between gap-3 rounded-2xl border border-sky-200 bg-white/80 p-4">

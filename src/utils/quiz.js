@@ -197,6 +197,34 @@ export function evaluateQuiz(questions, answersById) {
   };
 }
 
+export function evaluateQuestion(question, userAnswer) {
+  let isCorrect = false;
+  let essayMatch = null;
+
+  if (question.type === "A" || question.type === "C") {
+    isCorrect = compareText(userAnswer, question.answer);
+  }
+
+  if (question.type === "B") {
+    isCorrect = Boolean(userAnswer) === Boolean(question.answer);
+    if (typeof userAnswer !== "boolean") isCorrect = false;
+  }
+
+  if (question.type === "D") {
+    essayMatch = gradeEssay(question, userAnswer);
+    isCorrect = essayMatch.isCorrect;
+  }
+
+  return {
+    id: question.id,
+    type: question.type,
+    expected: question.type === "D" ? question.keywords : question.answer,
+    userAnswer: userAnswer ?? "",
+    isCorrect,
+    essayMatch,
+  };
+}
+
 export function getDefaultSampleJson() {
   return JSON.stringify(
     [
